@@ -5,10 +5,14 @@ using UnityEngine;
 
 public class AStar : MonoBehaviour {
 
+    // The transform the path is between.
     public Transform Seeker, Target;
 
+    // The start and end nodes for the current path.
     private Node _start, _end;
 
+    // Used this to do open and closed sets, do not remember why.
+    // I am guessing that since it is only used here I did not want to put it elsewhere.
     private OpenClosed[,] _openClosed;
 
     enum OpenClosed
@@ -16,9 +20,6 @@ public class AStar : MonoBehaviour {
         idle = 0,
         open = 1,
         closed = 2
-
-        
-
     }
 
     private Heap<Node> _heap;
@@ -26,10 +27,11 @@ public class AStar : MonoBehaviour {
 
     PathGridManager PathGridManager;
 
+
     private void Awake()
     {
+        // Gets a reference to pathgridmanager.
         PathGridManager = GetComponent<PathGridManager>();
-
     }
 
     private void Start()
@@ -43,26 +45,32 @@ public class AStar : MonoBehaviour {
     // Update is called once per frame
     void Update () {
 
+        // The path needs to be checked, probably not every frame really.
         FindPath(Seeker, Target);
 		
 	}
 
     private void FindPath(Transform seeker, Transform target)
     {
+
+        // The nodes the algorithm uses.
         Node start, end, current;
 
+        // Get grid nodes for current end points.
         start = PathGridManager.GetNode(seeker.position);
         end = PathGridManager.GetNode(target.position);
 
-        // No change, skip pathfinding.
-       // if (start == _start && end == _end) return;
+        // No change in end points, current path still valid, skip pathfinding.
+       if (start == _start && end == _end) return;
 
+       // Update the stored end points.
         _start = start;
         _end = end;
 
+        // Clear heap and the open and closed sets.
         ClearSets();
         
-
+        // Add first node to open set.
         AddToOpen(start);
 
         while(_heap.Count > 0)
@@ -75,7 +83,7 @@ public class AStar : MonoBehaviour {
                 MakePath();
                 return;
             }
-
+            
             foreach(Node next in current.GetNeighbours())
             {
                 // Already handled.
@@ -120,14 +128,10 @@ public class AStar : MonoBehaviour {
         _heap.Clear();
 
         // Clears the open closed data, might be faster to just make a new one.
-
-        // Turns out the code was calling array length function every iteration.
-        int xL = _openClosed.GetLength(0);
-        int yL = _openClosed.GetLength(1);
-
-        for (int x = 0; x<xL; x++)
+        // But it would create random garbage collect pauses eventually.
+        for (int x = 0; x< PathGridManager.numX; x++)
         {
-            for (int y = 0; y < yL; y++)
+            for (int y = 0; y < PathGridManager.numY; y++)
             {
                 _openClosed[x, y] = OpenClosed.idle;
             }
