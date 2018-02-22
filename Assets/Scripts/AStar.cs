@@ -75,6 +75,7 @@ public class AStar : MonoBehaviour
         // Add first node to open set.
         AddToOpen(start);
 
+        // Loop until all possible paths toward target have been tried.
         while (_heap.Count > 0)
         {
             current = _heap.RemoveFirst();
@@ -130,6 +131,7 @@ public class AStar : MonoBehaviour
         _heap.Clear();
 
         // Clear the open and closed sets.
+        // While moving these to Node seemed nice, it means this has to happen via Grid.
         PathGridManager.ClearOpenClosed();
     }
 
