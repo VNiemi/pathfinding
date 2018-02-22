@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Heap<T> where  T:IHeapItem<T>
+public class Heap<T> where T : IHeapItem<T>
 {
     T[] items;
     int itemCount;
@@ -27,7 +27,7 @@ public class Heap<T> where  T:IHeapItem<T>
         {
 
             T parentItem = items[parentIndex];
-            if(item.CompareTo(parentItem)>0)
+            if (item.CompareTo(parentItem) > 0)
             {
                 Swap(item, parentItem);
             }
@@ -61,7 +61,7 @@ public class Heap<T> where  T:IHeapItem<T>
 
     void SortDown(T item)
     {
-        while(true)
+        while (true)
         {
             int left = (item.HeapIndex * 2) + 1;
             int right = (item.HeapIndex * 2) + 2;
@@ -111,7 +111,7 @@ public class Heap<T> where  T:IHeapItem<T>
         // In this case it should work just fine since the nodes are static anyway.
         itemCount = 0;
     }
-    
+
 }
 
 public interface IHeapItem<T> : System.IComparable<T>

@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Node : IHeapItem<Node> {
+public class Node : IHeapItem<Node>
+{
 
-    public bool isBlocked;
+    //public bool isBlocked;
     public Vector3 position;
 
     public int GridX, GridY;
@@ -31,6 +32,16 @@ public class Node : IHeapItem<Node> {
         }
     }
 
+    public enum State
+    {
+        isReady,
+        isBlocked,
+        isOpen,
+        isClosed
+    }
+
+    public State state;
+
     List<Node> _neighbours;
     static PathGridManager _pgman;
 
@@ -53,7 +64,7 @@ public class Node : IHeapItem<Node> {
 
     public Node(bool blocked, Vector3 pos, int x, int y)
     {
-        isBlocked = blocked;
+        state = blocked ? State.isBlocked : State.isReady;
         position = pos;
 
         GridX = x;

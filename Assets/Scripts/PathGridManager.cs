@@ -19,7 +19,7 @@ public class PathGridManager : MonoBehaviour
     public List<Node> path = new List<Node>();
 
     Node[,] Grid;
-    
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.white;
@@ -36,7 +36,7 @@ public class PathGridManager : MonoBehaviour
         foreach (var node in Grid)
         {
 
-            Gizmos.color = node.isBlocked ? Color.red : Color.white;
+            Gizmos.color = (node.state == Node.State.isBlocked) ? Color.red : Color.white;
 
             // Blue if capsule in the node.
             if (node == capsuleNode) Gizmos.color = Color.blue;
@@ -60,8 +60,8 @@ public class PathGridManager : MonoBehaviour
 
     public Node GetNode(Vector3 position)
     {
-        int x = Mathf.RoundToInt(Mathf.Clamp((startX - position.x) / (HalfNodeWidth * 2), 0, numX - HalfNodeWidth*2));
-        int y = Mathf.RoundToInt(Mathf.Clamp((startY - position.z) / (HalfNodeWidth * 2), 0, numY - HalfNodeWidth*2));
+        int x = Mathf.RoundToInt(Mathf.Clamp((startX - position.x) / (HalfNodeWidth * 2), 0, numX - HalfNodeWidth * 2));
+        int y = Mathf.RoundToInt(Mathf.Clamp((startY - position.z) / (HalfNodeWidth * 2), 0, numY - HalfNodeWidth * 2));
 
         return Grid[x, y];
     }
@@ -121,13 +121,32 @@ public class PathGridManager : MonoBehaviour
                 // In theory saves some resources as this runs once per node.
                 // Would cause an issue if we checked obstacles dynamically,
                 // but we do not. Probably should but...
-                if (!Grid[x, y].isBlocked) result.Add(Grid[x, y]);
+                if (Grid[x, y].state != Node.State.isBlocked) result.Add(Grid[x, y]);
             }
         }
 
         return result;
     }
 
+    public void ClearOpenClosed()
+    {
+        // Clears the open closed data, might be faster to just make a new one.
+        // But it would create random garbage collect pauses eventually.
 
+        Node node;
+
+        for (int x = 0; x < numX; x++)
+        {
+            for (int y = 0; y < numY; y++)
+            {
+                node = Grid[x, y];
+                if (node.state != Node.State.isBlocked)
+                {
+                    node.state = Node.State.isReady;
+                }
+            }
+        }
+
+    }
 
 }
