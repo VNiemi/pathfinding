@@ -130,8 +130,6 @@ public class PathGridManager : MonoBehaviour
 
     public void ClearOpenClosed()
     {
-        // Clears the open closed data, might be faster to just make a new one.
-        // But it would create random garbage collect pauses eventually.
 
         Node node;
 
@@ -140,7 +138,10 @@ public class PathGridManager : MonoBehaviour
             for (int y = 0; y < numY; y++)
             {
                 node = Grid[x, y];
-                if (node.state != Node.State.isBlocked)
+
+                // In retrospect this is not a good way to do this. The separate array or an actual list would be faster.
+                // But fixing this now would probably qualify as unnecessary optimization.
+                if (node.state == Node.State.isOpen || node.state == Node.State.isClosed)
                 {
                     node.state = Node.State.isReady;
                 }

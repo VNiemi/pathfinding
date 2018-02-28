@@ -32,6 +32,8 @@ public class Node : IHeapItem<Node>
         }
     }
 
+    // Replaced the blocked bool with a state that holds all possible and mutually exclusive values a node might have.
+    // A separate array would actually be sligthly faster as open and closed sets need to be cleared with a loop.
     public enum State
     {
         isReady,
@@ -71,6 +73,10 @@ public class Node : IHeapItem<Node>
         GridY = y;
     }
 
+    /// <summary>
+    /// Function to return neighbours of the node. Results are cached in node.
+    /// </summary>
+    /// <returns>List of neighbouring nodes.</returns>
     public List<Node> GetNeighbours()
     {
         if (_neighbours == null)

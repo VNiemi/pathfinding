@@ -12,16 +12,17 @@ public class AStar : MonoBehaviour
     // The start and end nodes for the current path.
     private Node _start, _end;
 
-    // Used this to do open and closed sets, do not remember why.
-    // I am guessing that since it is only used here I did not want to put it elsewhere.
+    //NOTE : Obsolete comment and code.
+    //Used this to do open and closed sets, do not remember why.
+    //I am guessing that since it is only used here I did not want to put it elsewhere.
     //private OpenClosed[,] _openClosed;
 
-    enum OpenClosed
-    {
-        idle = 0,
-        open = 1,
-        closed = 2
-    }
+    //enum OpenClosed
+    //{
+    //    idle = 0,
+    //    open = 1,
+    //    closed = 2
+    //}
 
     private Heap<Node> _heap;
 
@@ -52,6 +53,11 @@ public class AStar : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Finds, builds and stores path between two positions on the grid.
+    /// </summary>
+    /// <param name="seeker">Seeker transform/object.</param>
+    /// <param name="target">Target transform/object.</param>
     private void FindPath(Transform seeker, Transform target)
     {
 
@@ -63,6 +69,7 @@ public class AStar : MonoBehaviour
         end = PathGridManager.GetNode(target.position);
 
         // No change in end points, current path still valid, skip pathfinding.
+        // The part you need to comment if you want to run the profiler.
         if (start == _start && end == _end) return;
 
         // Update the stored end points.
@@ -89,7 +96,7 @@ public class AStar : MonoBehaviour
 
             foreach (Node next in current.GetNeighbours())
             {
-                // Already handled.
+                // Already handled, note that GetNeighbours already did the block check and cached result.
                 if (IsClosed(next)) continue;
 
                 int cost = current.GCost + GetDistance(current, _end);
@@ -109,6 +116,8 @@ public class AStar : MonoBehaviour
         }
     }
 
+    #region This contains the closed and open sets replacement functions.
+
     private bool IsOpen(Node node)
     {
         return node.state == Node.State.isOpen;
@@ -125,6 +134,13 @@ public class AStar : MonoBehaviour
         node.state = Node.State.isOpen;
     }
 
+    private void CloseNode(Node node)
+    {
+        node.state = Node.State.isClosed;
+    }
+
+#endregion
+
     private void ClearSets()
     {
         // Clears the heap.
@@ -135,6 +151,9 @@ public class AStar : MonoBehaviour
         PathGridManager.ClearOpenClosed();
     }
 
+    /// <summary>
+    /// Builds and stores the path for pathgridmanager to show.
+    /// </summary>
     private void MakePath()
     {
         PathGridManager.path.Clear();
@@ -148,14 +167,12 @@ public class AStar : MonoBehaviour
         PathGridManager.path.Reverse();
     }
 
-    private void CloseNode(Node node)
-    {
-        node.state = Node.State.isClosed;
-    }
-
-
-
-
+    /// <summary>
+    /// Function to get the Manhattan distance between two nodes.
+    /// </summary>
+    /// <param name="a">First Node</param>
+    /// <param name="b">Second Node</param>
+    /// <returns>Manhattan distance between nodes.</returns>
     public int GetDistance(Node a, Node b)
     {
         int DistX = Math.Abs(a.GridX - b.GridX);
